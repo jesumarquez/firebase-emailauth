@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="col-md-4 col-sm-8 col-xs-12">
+            <h1>Firebase Email Authentication</h1>
+            <form class="form">
+                <div class="form-group">
+                    <input id="txtEmail" type="email" class="form-control" placeholder="email"/>
+                </div>
+                <div class="form-group">
+                    <input id="txtPassword" type="password" class="form-control" placeholder="password"/>
+                </div>
+                <button id="btnLogin" type="button" class="btn btn-default">Login</button>
+                <button id="btnSignUp" type="button" class="btn btn-primary">Sign Up</button>
+                <button id="btnSignOut" type="button" class="btn btn-default">Sign Out</button>
+            </form>
+            <br/>
+            <div id="message" class="alert"></div>
+        </div>
+    </div>
+
+<script src="https://www.gstatic.com/firebasejs/3.2.1/firebase.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBvooXXnPuicNuVBI_JPMTpBimnC2zNIPI",
+    authDomain: "authsample-702c4.firebaseapp.com",
+    databaseURL: "https://authsample-702c4.firebaseio.com",
+    storageBucket: "",
+  };
+  firebase.initializeApp(config);
+  
+  var btnLogin = $("#btnLogin");
+  var btnSignUp = $("#btnSignUp");
+  var btnSignOut = $("#btnSignOut");
+  var txtEmail = $("#txtEmail");
+  var txtPassword = $("#txtPassword");
+  var message = $("#message");
+  
+  btnLogin.on("click", function(){
+      firebase.auth()
+        .signInWithEmailAndPassword(txtEmail.val(), txtPassword.val())
+        .catch(function(error){
+            showMessage(error, 'error');
+        });
+  });
+
+  btnSignUp.on("click", function(){
+      firebase.auth()
+        .createUserWithEmailAndPassword(txtEmail.val(), txtPassword.val())
+        .catch(function(error){
+            showMessage(error, 'error');
+        });
+  });
+
+  btnSignOut.on("click", function(){
+      firebase.auth()
+        .signOut()
+        .then(function (){
+            showMessage('Logout.')
+        }, function(error){
+            showMessage(error, 'error');
+        });
+  });
+
+  firebase.auth()
+    .onAuthStateChanged(function(firebaseUser){
+        if(firebaseUser){
+            showMessage('User logged in.');
+        } else {
+            //showMessage("not logged in");
+        }
+    });
+
+function showMessage(msg, type){
+    message.text(msg);
+    
+    if(type === 'error'){
+        message.removeClass('alert-success');
+        message.addClass('alert-danger');
+    } else {
+        message.addClass('alert-success');
+        message.removeClass('alert-danger');
+    }
+
+    message.show();
+    
+    setTimeout(function(){
+        message.hide();
+    }, 3000);
+}
+
+</script>
+</body>
+</html>
